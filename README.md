@@ -1,116 +1,113 @@
-**Vulnerability Assessment Report — Altoro Mutual
-**
-Internship Project | Web Application Security Assessment Performed on a deliberately vulnerable demo banking application for educational purposes.
+Vulnerability Assessment Report — Altoro Mutual
 
+Task 1 | Cyber Security Internship | Future Interns
+Web Application Security Assessment performed on a deliberately vulnerable demo banking site for educational purposes.
 
-**🌐 Website Tested**
-**Field **                 **Details** 
-Target                       Altoro Mutual Online Banking
-URL                          http://demo.testfire.net
-Type                         Deliberately vulnerable demo web application
-Published by                 HCL Technologies Ltd. (for security testing education)
-Date  of Assessment          9 May 2026
+ Website Tested
+FieldDetailsTargetAltoro Mutual Online BankingURLhttp://demo.testfire.netTypeDeliberately vulnerable demo web applicationPublished byHCL Technologies Ltd. (for security testing education)Date of Assessment9 May 2026
 
-🎯 Scope
+ Scope
 
-In scope: Application-layer vulnerabilities (login, search, feedback, headers, cookies)
+In scope: Application-layer vulnerabilities (login, search, feedback, HTTP headers, cookies)
 Out of scope: Network infrastructure, third-party services, denial-of-service attacks
 Method: Passive and read-only analysis — no data was modified or destroyed
 Approach: Followed OWASP Testing Guide methodology
 
 
-🛠️ Tools Used
-Tool                           Purpose
-OWASP ZAP 2.17.0               Automated passive vulnerability scanning
-Browser DevTools (Chrome)      HTTP response header inspection
-Web Browser                    Manual testing of login, search, and feedback forms
+ Tools Used
+Tool and Purpose
+OWASP ZAP -2.17.0  Automated passive vulnerability scanning.
+Browser DevTools (Chrome)-HTTP response header inspection
+Web Browser -Manual testing of login, search, and feedback forms
 
-📊 Summary of Findings
-Risk           LevelCount
-🔴 High        4      
-🟠 Medium      5
-🟡 Low         3
-Total          12
+ Summary of Findings
+Automated Scan Results (OWASP ZAP)
+Risk Level and Number of Alerts High-3 Medium-5 Low-9 Informational- 5Total ZAP Alerts-22
+Additional Manual Testing Findings
+FindingMethodDefault credentials accepted (admin/admin)Manual login testVerbose error message on failed loginManual login test
 
-🔴 High Risk Findings
+ High Risk Findings (ZAP Confirmed)
 1. Reflected Cross-Site Scripting (XSS)
 
-Location: search.jsp, sendFeedback
-Evidence: Injecting <script>alert('xss')</script> triggered a browser alert popup
-Impact: Attackers can steal session cookies, redirect users, or perform actions on their behalf
-Fix: Encode all user output with HTML escaping; add a Content-Security-Policy header
+Location: search.jsp, sendFeedback (parameter: name)
+CWE ID: 79 | WASC ID: 8
+Evidence: Injecting <script>alert('xss')</script> triggered a browser alert popup. Also confirmed by ZAP active scan.
+Impact: Attackers can steal session cookies, redirect users to malicious sites, or perform actions on a victim's behalf
+Fix: Encode all user-supplied output using HTML escaping; implement a Content-Security-Policy (CSP) header
 
 2. SQL Injection
 
-Location: doLogin — login form (uid parameter)
-Evidence: ZAP confirmed with payload ZAP' OR '1'='1' -- (CWE-89)
-Impact: Attacker can bypass authentication or extract the entire database
-Fix: Use parameterized queries (prepared statements); never concatenate raw input into SQL
+Location: doLogin — login form (parameter: uid)
+CWE ID: 89 | WASC ID: 19
+Evidence: ZAP confirmed with payload ZAP' OR '1'='1' --
+Impact: Attacker can bypass authentication or extract, modify, or delete the entire database
+Fix: Use parameterized queries (prepared statements) for all database interactions; never concatenate raw input into SQL strings
 
 3. PII Disclosure
 
-Location: Application responses
-Evidence: ZAP detected responses containing personally identifiable information such as credit card numbers and SSN-like data (CWE-359)
-Impact: Sensitive customer data exposed to unauthorized parties
-Fix: Mask or remove sensitive data from all HTTP responses; implement data minimization
-
-4. Default Credentials Accepted
-
-Location: login.jsp
-Evidence: Successfully logged in with admin / admin — accessed "Hello John Smith" dashboard
-Impact: Any attacker can gain full account access with publicly known credentials
-Fix: Force password change on first login; disable default credentials in production
+Location: Application HTTP responses
+CWE ID: 359 | WASC ID: 13
+Evidence: ZAP detected responses containing Personally Identifiable Information such as credit card numbers and SSN-like data
+Impact: Sensitive customer financial data exposed to unauthorized parties — critical for a banking application
+Fix: Remove or mask all sensitive data from HTTP responses; implement strict data minimization policies
 
 
-🟠 Medium Risk Findings
-5. Missing Security Headers
+ Medium Risk Findings (ZAP Confirmed)
+4. Content Security Policy (CSP) Header Not Set
 
-Location: All pages (HTTP response headers)
-Missing: Content-Security-Policy, X-Frame-Options, X-Content-Type-Options, Strict-Transport-Security
-Impact: Exposes site to clickjacking, MIME sniffing, and man-in-the-middle attacks
-Fix: Add all security headers in the web server configuration
+Location: All pages
+Impact: Browser has no instructions on which sources are trusted, enabling XSS and data injection attacks
+Fix: Add Content-Security-Policy header in web server configuration
 
-6. Absence of Anti-CSRF Tokens
+5. Absence of Anti-CSRF Tokens
 
-Location: Forms across the application
-Impact: Attackers can trick logged-in users into submitting unintended requests
-Fix: Add a unique CSRF token to every state-changing form
+Location: All forms across the application
+Impact: Attackers can trick logged-in users into submitting unintended requests (e.g., transferring funds)
+Fix: Add a unique, unpredictable CSRF token to every state-changing form
+
+6. Missing Anti-Clickjacking Header
+
+Location: All pages
+Impact: Site can be embedded in a hidden iframe to trick users into clicking malicious elements
+Fix: Add X-Frame-Options: DENY or use CSP frame-ancestors 'none'
 
 7. Cross-Domain Misconfiguration
 
 Location: Application-wide
-Impact: Allows unauthorized cross-origin access to resources
-Fix: Configure CORS policy to allow only trusted domains
+Impact: Allows unauthorized cross-origin access to application resources
+Fix: Configure CORS policy to allow only explicitly trusted domains
 
-8. Missing Anti-Clickjacking Header
-
-Location: All pages
-Impact: Site can be embedded in a hidden iframe to trick users into clicking malicious elements
-Fix: Add X-Frame-Options: DENY header
-
-9. Cookie Without SameSite Attribute
+8. Cookie Without SameSite Attribute
 
 Location: JSESSIONID session cookie
-Impact: Cookie can be sent in cross-site requests, enabling CSRF attacks
+Impact: Session cookie can be sent in cross-site requests, enabling CSRF attacks
 Fix: Set SameSite=Strict or SameSite=Lax on all cookies
 
 
-🟡 Low Risk Findings
-10. No HTTPS / TLS Encryption
+ Low Risk Findings (ZAP + Manual)
+9. No HTTPS / TLS Encryption
 
 Location: Entire site (HTTP only)
-Evidence: Browser shows "Not secure" warning in address bar
-Impact: All data including login credentials transmitted in plain text
-Fix: Install a TLS certificate (e.g., Let's Encrypt — free) and redirect all HTTP to HTTPS
+Evidence: Browser shows "Not secure" warning; Request URL is http://
+Impact: All data including login credentials transmitted unencrypted over the network
+Fix: Install a free TLS certificate (Let's Encrypt) and redirect all HTTP to HTTPS
 
-11. Server Version Disclosure
+10. Server Version Disclosure
 
 Location: HTTP response header — Server: Apache-Coyote/1.1
-Impact: Reveals exact server version; attackers can look up known exploits
-Fix: Set ServerTokens Prod in Apache config to hide version details
+Impact: Reveals exact server software and version; attackers can look up known CVEs for that version
+Fix: Set ServerTokens Prod in Apache config to suppress version information
 
-12. Admin Panel Publicly Discoverable
+11. Default Credentials Accepted (Manual Finding)
 
-Location: /admin directory visible in ZAP site tree
-Impact: Attackers can target the admin interface directly
-Fix: Restrict access to /admin by IP whitelist or VPN only
+Location: login.jsp
+Evidence: Successfully logged in with admin / admin — reached "Hello John Smith" dashboard
+Impact: Any attacker can access the full banking dashboard with publicly known credentials
+Fix: Disable default credentials; enforce strong password policy; force password change on first login
+
+12. Verbose Login Error Message (Manual Finding)
+
+Location: login.jsp
+Evidence: Error says "this username or password was not found" — reveals whether a username exists
+Impact: Helps attackers enumerate valid usernames (username harvesting)
+Fix: Replace with a generic message: "Invalid username or password"
