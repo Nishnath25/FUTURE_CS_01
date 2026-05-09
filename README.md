@@ -5,11 +5,11 @@ Internship Project | Web Application Security Assessment Performed on a delibera
 
 **🌐 Website Tested**
 **Field **                 **Details** 
-Target                 Altoro Mutual Online Banking
-URL                    http://demo.testfire.net
-Type                   Deliberately vulnerable demo web application
-Published by           HCL Technologies Ltd. (for security testing education)
-Date  of Assessment    9 May 2026
+Target                       Altoro Mutual Online Banking
+URL                          http://demo.testfire.net
+Type                         Deliberately vulnerable demo web application
+Published by                 HCL Technologies Ltd. (for security testing education)
+Date  of Assessment          9 May 2026
 
 🎯 Scope
 
