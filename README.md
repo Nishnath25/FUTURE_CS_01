@@ -167,8 +167,6 @@ Host: demo.testfire.net (65.61.137.117)
 
 
 
----
-
 ## ⚠️ Disclaimer
 
 This assessment was conducted **solely for educational and internship purposes**.
