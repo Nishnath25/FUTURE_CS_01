@@ -165,33 +165,7 @@ Host: demo.testfire.net (65.61.137.117)
 
 ---
 
-## 📁 Repository Structure
 
-```
-FUTURE_CS_01/
-│
-├── evidence/
-│   ├── 01_homepage.png
-│   ├── 02_network_requests.png
-│   ├── 03_response_headers.png
-│   ├── 04_not_secure.png
-│   ├── 05_login_page.png
-│   ├── 06_login_credentials.png
-│   ├── 07_login_failed_verbose.png
-│   ├── 08_logged_in_dashboard.png
-│   ├── 09_xss_popup.png
-│   ├── 10_feedback_insecure.png
-│   ├── 11_zap_alerts_list.png
-│   ├── 12_zap_xss_detail.png
-│   ├── 13_zap_pii_detail.png
-│   ├── 14_zap_sqli_detail.png
-│   ├── 15_zap_report_summary.png
-│   └── 16_zap_sites_tree.png
-│
-├── zap_report.html
-├── security_assessment_finding.pdf
-└── README.md
-```
 
 ---
 
